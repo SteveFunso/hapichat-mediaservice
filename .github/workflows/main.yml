@@ -36,9 +36,9 @@ jobs:
           echo "$HAPICHAT_SSH_KEY" | tr -d '\r' > do_key.pem
           chmod 600 do_key.pem
           ssh -i do_key.pem $DO_USER@$DO_HOST
-          rsync -avz -e "ssh -i do_key.pem" --exclude '.git/' --exclude 'node_modules/' ./ $DO_USER@$DO_HOST:~/userservice
+          rsync -avz -e "ssh -i do_key.pem" --exclude '.git/' --exclude 'node_modules/' ./ $DO_USER@$DO_HOST:~/mediaservice
           ssh -i do_key.pem $DO_USER@$DO_HOST <<EOF
-            cd /userservice
+            cd /mediaservice
             echo "CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME" >> .env
             echo "CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY" >> .env
             echo "CLOUDINARY_SECRET_KEY=$CLOUDINARY_SECRET_KEY" >> .env
@@ -46,4 +46,3 @@ jobs:
             yarn start
             EOF
           rm -f do_key.pem
-        #   ssh -i do_key.pem $DO_USER@$DO_HOST "cd /path/to/your/strapi/folder && yarn install && DATABASE_USERNAME=$DATABASE_USERNAME DATABASE_PASSWORD=$DATABASE_PASSWORD yarn start"
