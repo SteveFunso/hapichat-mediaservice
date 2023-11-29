@@ -38,11 +38,11 @@ jobs:
           chmod 600 do_key.pem
           ssh -i do_key.pem ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }}
           rsync -avz -e "ssh -i do_key.pem" --exclude '.git/' --exclude 'node_modules/' ./ $DO_USER@$DO_HOST:~/mediaservice
-          ssh -i do_key.pem $DO_USER@$DO_HOST <<EOF
+          ssh -i do_key.pem ${{ secrets.DO_USER }}@${{ secrets.DO_HOST }} <<EOF
             cd /mediaservice
-            echo "CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME" >> .env
-            echo "CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY" >> .env
-            echo "CLOUDINARY_SECRET_KEY=$CLOUDINARY_SECRET_KEY" >> .env
+            echo "CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}" >> .env
+            echo "CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}" >> .env
+            echo "CLOUDINARY_SECRET_KEY=${{ secrets.CLOUDINARY_SECRET_KEY }}" >> .env
             npm install
             npm start
             EOF
