@@ -1,0 +1,49 @@
+name: Deploy to Digital Ocean
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build
+        run: yarn build
+
+      - name: Deploy to Digital Ocean
+        env:
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_SECRET_KEY: ${{ secrets.CLOUDINARY_SECRET_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H $DO_HOST >> ~/.ssh/known_hosts
+          echo "$HAPICHAT_SSH_KEY"
+          echo "$HAPICHAT_SSH_KEY" | tr -d '\r' > do_key.pem
+          chmod 600 do_key.pem
+          ssh -i do_key.pem $DO_USER@$DO_HOST
+          rsync -avz -e "ssh -i do_key.pem" --exclude '.git/' --exclude 'node_modules/' ./ $DO_USER@$DO_HOST:~/userservice
+          ssh -i do_key.pem $DO_USER@$DO_HOST <<EOF
+            cd /userservice
+            echo "CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME" >> .env
+            echo "CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY" >> .env
+            echo "CLOUDINARY_SECRET_KEY=$CLOUDINARY_SECRET_KEY" >> .env
+            yarn install
+            yarn start
+            EOF
+          rm -f do_key.pem
+        #   ssh -i do_key.pem $DO_USER@$DO_HOST "cd /path/to/your/strapi/folder && yarn install && DATABASE_USERNAME=$DATABASE_USERNAME DATABASE_PASSWORD=$DATABASE_PASSWORD yarn start"
