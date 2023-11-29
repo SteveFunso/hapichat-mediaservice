@@ -19,10 +19,10 @@ jobs:
           node-version: "18"
 
       - name: Install dependencies
-        run: yarn install
+        run: npm install
 
       - name: Build
-        run: yarn build
+        run: npm start
 
       - name: Deploy to Digital Ocean
         env:
@@ -42,7 +42,7 @@ jobs:
             echo "CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME" >> .env
             echo "CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY" >> .env
             echo "CLOUDINARY_SECRET_KEY=$CLOUDINARY_SECRET_KEY" >> .env
-            yarn install
-            yarn start
+            npm install
+            npm start
             EOF
           rm -f do_key.pem
