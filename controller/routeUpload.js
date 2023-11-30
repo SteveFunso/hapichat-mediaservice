@@ -25,12 +25,16 @@ router.post(
             })
           : null;
 
-        return { success: true, message: "Uploaded!", data: result };
+        return result; // { success: true, message: "Uploaded!", data: result };
       });
 
       const uploadResults = await Promise.all(uploadPromises);
 
-      res.status(200).json(uploadResults);
+      res.status(200).json({
+        status: true,
+        message: "Uploaded successfuly",
+        data: uploadResults,
+      });
     } catch (error) {
       console.error(error);
       res.status(500).json({
